@@ -1,0 +1,2850 @@
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@500&amp;display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Jua&amp;display=swap" rel="stylesheet">
+
+  <title>바다 위 대나무 숲</title>
+  <!--    font-family: 'Jua', sans-serif;-->
+  <script>
+    $(document).ready(function () {
+      getMessages();
+    })
+
+    function getMessages() {
+      $('#cards-box').empty();
+      $.ajax({
+        type: "GET",
+        url: "/api/contents",
+        data: {},
+        success: function (response) {
+          for (let i = 0; i < response.length; i++) {
+            let post = response[i];
+            let id = post.id;
+            let name = post.name;
+            let title = post.title;
+            let contents = post.contents;
+            let modifiedAt = post.modifiedAt;
+            let countReply = post.countReply;
+            addHTML(id, name, title, contents, modifiedAt, countReply);
+          }
+        }
+      });
+    }
+
+    function addHTML(id, name, title, contents, modifiedAt, countReply) {
+      let tempHtml = makeMessage(id, name, title, contents, modifiedAt, countReply);
+      $('#cards-box').append(tempHtml);
+    }
+
+    function makeMessage(id, name, title, contents, modifiedAt, countReply) {
+      return `<a href="detail.html?id=${id}">
+                        <div class="card">
+                            <div class="metadata">
+                               <div id="${id}-name" class="name">
+                                   ${name}
+                               </div>
+                               <div class="date">
+                                   ${modifiedAt}
+                               </div>
+                            </div>
+                            <h2 class='title' id="${id}-title">"${title}"</h2>
+                            <div class="contents" id="${id}-contents" >
+                               ${contents}
+                            </div>
+                            <div class="countReply">
+                            댓글 : ${countReply}
+                            </div>
+                         </a>
+
+                        </div>`;
+    }
+
+  </script>
+  <style>
+    @import url(//spoqa.github.io/spoqa-han-sans/css/SpoqaHanSans-kr.css);
+
+    * {
+      font-family: 'Jua', sans-serif !important;
+    }
+
+    body {
+      margin: 0px;
+    }
+
+    .area-edit {
+      display: none;
+    }
+
+    .wrap {
+      width: 538px;
+      margin: 10px auto;
+      height: 300px;
+    }
+
+    #contents {
+      width: 538px;
+    }
+
+    .to-write {
+      margin-bottom: 250px;
+    }
+
+    li {
+      list-style: none;
+    }
+
+    .to-write button {
+      float: right;
+      position: relative;
+      padding: 10px;
+      width: 150px;
+      font-size: 20px;
+      margin-left: 450px;
+      margin-top: 120px;
+      border-radius: 20px;
+    }
+
+    .background-header {
+      position: fixed;
+      z-index: -1;
+      top: 0px;
+      width: 100%;
+      height: 428px;
+      background-color: #339af0;
+    }
+
+    .background-body {
+      position: fixed;
+      z-index: -1;
+      top: 428px;
+      height: 100%;
+      width: 100%;
+      background-color: #174978;
+    }
+
+    .header {
+      margin-top: 70px;
+    }
+
+    .header h2 {
+      /*font-family: 'Noto Sans KR', sans-serif;*/
+      height: 33px;
+      font-size: 42px;
+      font-weight: 500;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 0.79;
+      letter-spacing: -0.5px;
+      text-align: center;
+      color: #ffffff;
+      margin-top: 40px;
+    }
+
+    .header p {
+      margin: 40px auto;
+      width: 217px;
+      height: 48px;
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 16px;
+      font-weight: 500;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.5;
+      letter-spacing: -1.12px;
+      text-align: center;
+      color: #ffffff;
+    }
+
+    textarea.field {
+      width: 502px !important;
+      height: 146px;
+      border-radius: 5px;
+      background-color: #ffffff;
+      border: none;
+      padding: 18px;
+      resize: none;
+    }
+
+    textarea.field::placeholder {
+      width: 216px;
+      height: 16px;
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 16px;
+      font-weight: normal;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1;
+      letter-spacing: -0.96px;
+      text-align: left;
+      color: #868e96;
+    }
+
+    .card {
+      width: 538px;
+      border-radius: 5px;
+      background-color: #ffffff;
+      margin-bottom: 30px;
+      padding-bottom: 0px;
+    }
+
+    .card .metadata {
+      position: relative;
+      display: flex;
+      font-family: 'Spoqa Han Sans';
+      font-size: 18px;
+      font-weight: normal;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1;
+      letter-spacing: -0.77px;
+      text-align: left;
+      color: #adb5bd;
+      height: 14px;
+      padding: 10px 23px;
+    }
+
+    .card .metadata .date {
+      position: absolute;
+      right: 20px;
+    }
+
+    /*.card .metadata .name {*/
+    /*}*/
+
+    .contents {
+      font-size: 21px;
+      padding: 0px 23px;
+      word-wrap: break-word;
+      word-break: break-all;
+    }
+
+    .countReply {
+      padding: 5px 20px;
+      color: #BD63AB;
+      text-align: right;
+    }
+
+    .contents div.edit {
+      display: none;
+    }
+
+    .contents textarea.te-edit {
+      border-right: none;
+      border-top: none;
+      border-left: none;
+      resize: none;
+      border-bottom: 1px solid #212529;
+      width: 100%;
+      font-family: 'Spoqa Han Sans';
+    }
+
+    .footer {
+      position: relative;
+      height: 40px;
+      top: 15px;
+    }
+
+    .footer img.icon-start-edit {
+      cursor: pointer;
+      position: absolute;
+      bottom: 14px;
+      right: 55px;
+      width: 18px;
+      height: 18px;
+    }
+
+    .footer img.icon-end-edit {
+      cursor: pointer;
+      position: absolute;
+      display: none;
+      bottom: 14px;
+      right: 55px;
+      width: 20px;
+      height: 15px;
+    }
+
+    .footer img.icon-delete {
+      cursor: pointer;
+      position: absolute;
+      bottom: 12px;
+      right: 19px;
+      width: 14px;
+      height: 18px;
+    }
+
+    #cards-box {
+      margin-top: 12px;
+    }
+
+    .card h2 {
+      margin-left: 30px;
+    }
+
+    a {
+      text-decoration: none;
+      color: #000000;
+    }
+
+    #logout-text, #login-text, #signup-text {
+      text-decoration: none;
+      color: #FFA547;
+      display: block;
+      text-align: right;
+      font-size: 30px;
+    }
+  </style>
+
+</head>
+
+<body>
+<div class="background-header">
+</div>
+<div class="background-body">
+
+</div>
+<div class="wrap">
+  <div class="header">
+
+    <a id="login-text" href="/user/login">
+      로그인
+    </a>
+    <a id="signup-text" href="/user/signup">
+      회원가입
+    </a>
+    <h2>항해99 바다 위 대나무숲<br><br>
+
+      맘껏 외치세요 무야호!
+    </h2>
+  </div>
+  <div class="to-write">
+
+  </div>
+  <div id="cards-box" class="area-read"><a href="detail.html?id=881">
+  </a><div class="card"><a href="detail.html?id=881">
+    <div class="metadata">
+      <div id="881-name" class="name">
+        qqwweedd
+      </div>
+      <div class="date">
+        2022-05-31 23:18:44
+      </div>
+    </div>
+    <h2 class="title" id="881-title">"wdqdqw"</h2>
+    <div class="contents" id="881-contents">
+      dqwd
+    </div>
+    <div class="countReply">
+      댓글 : 2
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=877">
+  </a><div class="card"><a href="detail.html?id=877">
+    <div class="metadata">
+      <div id="877-name" class="name">
+        testtesttest11
+      </div>
+      <div class="date">
+        2022-05-31 22:50:23
+      </div>
+    </div>
+    <h2 class="title" id="877-title">"test11"</h2>
+    <div class="contents" id="877-contents">
+      test11
+    </div>
+    <div class="countReply">
+      댓글 : 0
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=873">
+  </a><div class="card"><a href="detail.html?id=873">
+    <div class="metadata">
+      <div id="873-name" class="name">
+        qwe
+      </div>
+      <div class="date">
+        2022-05-31 21:27:37
+      </div>
+    </div>
+    <h2 class="title" id="873-title">"qwe"</h2>
+    <div class="contents" id="873-contents">
+      qweqwe
+    </div>
+    <div class="countReply">
+      댓글 : 1
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=872">
+  </a><div class="card"><a href="detail.html?id=872">
+    <div class="metadata">
+      <div id="872-name" class="name">
+        lsi1000
+      </div>
+      <div class="date">
+        2022-05-31 20:32:06
+      </div>
+    </div>
+    <h2 class="title" id="872-title">"항해"</h2>
+    <div class="contents" id="872-contents">
+      여러분 화이팅~~~~~~~~~~!!!!!!!!!!!!!!!!!!!!
+
+    </div>
+    <div class="countReply">
+      댓글 : 0
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=866">
+  </a><div class="card"><a href="detail.html?id=866">
+    <div class="metadata">
+      <div id="866-name" class="name">
+        sparta7777
+      </div>
+      <div class="date">
+        2022-05-31 17:09:32
+      </div>
+    </div>
+    <h2 class="title" id="866-title">"hkjm"</h2>
+    <div class="contents" id="866-contents">
+      erhejrtjtukuyk
+    </div>
+    <div class="countReply">
+      댓글 : 0
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=857">
+  </a><div class="card"><a href="detail.html?id=857">
+    <div class="metadata">
+      <div id="857-name" class="name">
+        hanghae
+      </div>
+      <div class="date">
+        2022-05-31 15:56:10
+      </div>
+    </div>
+    <h2 class="title" id="857-title">"test"</h2>
+    <div class="contents" id="857-contents">
+      test
+    </div>
+    <div class="countReply">
+      댓글 : 1
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=850">
+  </a><div class="card"><a href="detail.html?id=850">
+    <div class="metadata">
+      <div id="850-name" class="name">
+        na991223
+      </div>
+      <div class="date">
+        2022-05-31 10:16:53
+      </div>
+    </div>
+    <h2 class="title" id="850-title">"항해99"</h2>
+    <div class="contents" id="850-contents">
+      살려줘
+    </div>
+    <div class="countReply">
+      댓글 : 1
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=848">
+  </a><div class="card"><a href="detail.html?id=848">
+    <div class="metadata">
+      <div id="848-name" class="name">
+        hjklhjkl
+      </div>
+      <div class="date">
+        2022-05-31 10:11:33
+      </div>
+    </div>
+    <h2 class="title" id="848-title">"제목"</h2>
+    <div class="contents" id="848-contents">
+      코멘트들
+
+    </div>
+    <div class="countReply">
+      댓글 : 0
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=845">
+  </a><div class="card"><a href="detail.html?id=845">
+    <div class="metadata">
+      <div id="845-name" class="name">
+        qweasd
+      </div>
+      <div class="date">
+        2022-05-31 09:39:24
+      </div>
+    </div>
+    <h2 class="title" id="845-title">"test"</h2>
+    <div class="contents" id="845-contents">
+      1
+    </div>
+    <div class="countReply">
+      댓글 : 1
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=836">
+  </a><div class="card"><a href="detail.html?id=836">
+    <div class="metadata">
+      <div id="836-name" class="name">
+        spring1234
+      </div>
+      <div class="date">
+        2022-05-30 19:33:50
+      </div>
+    </div>
+    <h2 class="title" id="836-title">"무야호"</h2>
+    <div class="contents" id="836-contents">
+      야호
+    </div>
+    <div class="countReply">
+      댓글 : 1
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=832">
+  </a><div class="card"><a href="detail.html?id=832">
+    <div class="metadata">
+      <div id="832-name" class="name">
+        Moon
+      </div>
+      <div class="date">
+        2022-05-30 17:24:16
+      </div>
+    </div>
+    <h2 class="title" id="832-title">"작성"</h2>
+    <div class="contents" id="832-contents">
+      작성확인
+    </div>
+    <div class="countReply">
+      댓글 : 0
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=820">
+  </a><div class="card"><a href="detail.html?id=820">
+    <div class="metadata">
+      <div id="820-name" class="name">
+        asdf2
+      </div>
+      <div class="date">
+        2022-05-30 15:02:31
+      </div>
+    </div>
+    <h2 class="title" id="820-title">"d"</h2>
+    <div class="contents" id="820-contents">
+      d
+    </div>
+    <div class="countReply">
+      댓글 : 1
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=816">
+  </a><div class="card"><a href="detail.html?id=816">
+    <div class="metadata">
+      <div id="816-name" class="name">
+        testuser
+      </div>
+      <div class="date">
+        2022-05-30 14:57:48
+      </div>
+    </div>
+    <h2 class="title" id="816-title">"혹시 다하신분?"</h2>
+    <div class="contents" id="816-contents">
+      너무어렵네요 ㅎㅎ;
+    </div>
+    <div class="countReply">
+      댓글 : 3
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=813">
+  </a><div class="card"><a href="detail.html?id=813">
+    <div class="metadata">
+      <div id="813-name" class="name">
+        testda
+      </div>
+      <div class="date">
+        2022-05-30 13:46:57
+      </div>
+    </div>
+    <h2 class="title" id="813-title">"으렵다으려워"</h2>
+    <div class="contents" id="813-contents">
+      ......
+    </div>
+    <div class="countReply">
+      댓글 : 0
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=807">
+  </a><div class="card"><a href="detail.html?id=807">
+    <div class="metadata">
+      <div id="807-name" class="name">
+        anajinjja
+      </div>
+      <div class="date">
+        2022-05-30 10:01:25
+      </div>
+    </div>
+    <h2 class="title" id="807-title">"나는 돌이다"</h2>
+    <div class="contents" id="807-contents">
+      무생물이다
+    </div>
+    <div class="countReply">
+      댓글 : 0
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=797">
+  </a><div class="card"><a href="detail.html?id=797">
+    <div class="metadata">
+      <div id="797-name" class="name">
+        qwerqwer
+      </div>
+      <div class="date">
+        2022-05-29 01:31:49
+      </div>
+    </div>
+    <h2 class="title" id="797-title">"이거 너무 어렵잖아"</h2>
+    <div class="contents" id="797-contents">
+      이거 너무 어려워서 진도가 안나가잖아
+    </div>
+    <div class="countReply">
+      댓글 : 2
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=794">
+  </a><div class="card"><a href="detail.html?id=794">
+    <div class="metadata">
+      <div id="794-name" class="name">
+        useruser
+      </div>
+      <div class="date">
+        2022-05-29 01:01:32
+      </div>
+    </div>
+    <h2 class="title" id="794-title">"아우 어려워"</h2>
+    <div class="contents" id="794-contents">
+      너무 어렵네 이거
+    </div>
+    <div class="countReply">
+      댓글 : 0
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=786">
+  </a><div class="card"><a href="detail.html?id=786">
+    <div class="metadata">
+      <div id="786-name" class="name">
+        qpwoeiru12
+      </div>
+      <div class="date">
+        2022-05-28 18:29:01
+      </div>
+    </div>
+    <h2 class="title" id="786-title">"123"</h2>
+    <div class="contents" id="786-contents">
+      이거가능한거맞나요 ?
+    </div>
+    <div class="countReply">
+      댓글 : 1
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=780">
+  </a><div class="card"><a href="detail.html?id=780">
+    <div class="metadata">
+      <div id="780-name" class="name">
+        sdff
+      </div>
+      <div class="date">
+        2022-05-28 15:22:55
+      </div>
+    </div>
+    <h2 class="title" id="780-title">"1111"</h2>
+    <div class="contents" id="780-contents">
+      asdf
+    </div>
+    <div class="countReply">
+      댓글 : 2
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=774">
+  </a><div class="card"><a href="detail.html?id=774">
+    <div class="metadata">
+      <div id="774-name" class="name">
+        kingking
+      </div>
+      <div class="date">
+        2022-05-28 13:12:18
+      </div>
+    </div>
+    <h2 class="title" id="774-title">"헤헤헤"</h2>
+    <div class="contents" id="774-contents">
+      헤헤헿
+    </div>
+    <div class="countReply">
+      댓글 : 1
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=757">
+  </a><div class="card"><a href="detail.html?id=757">
+    <div class="metadata">
+      <div id="757-name" class="name">
+        12321123
+      </div>
+      <div class="date">
+        2022-05-27 20:20:58
+      </div>
+    </div>
+    <h2 class="title" id="757-title">"qwe"</h2>
+    <div class="contents" id="757-contents">
+      qwe
+    </div>
+    <div class="countReply">
+      댓글 : 3
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=755">
+  </a><div class="card"><a href="detail.html?id=755">
+    <div class="metadata">
+      <div id="755-name" class="name">
+        tan
+      </div>
+      <div class="date">
+        2022-05-27 18:38:27
+      </div>
+    </div>
+    <h2 class="title" id="755-title">"?"</h2>
+    <div class="contents" id="755-contents">
+      ..
+    </div>
+    <div class="countReply">
+      댓글 : 0
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=741">
+  </a><div class="card"><a href="detail.html?id=741">
+    <div class="metadata">
+      <div id="741-name" class="name">
+        admin123
+      </div>
+      <div class="date">
+        2022-05-27 13:59:26
+      </div>
+    </div>
+    <h2 class="title" id="741-title">"온더마이크로폰"</h2>
+    <div class="contents" id="741-contents">
+      첵디스아웃 나는 정상수
+    </div>
+    <div class="countReply">
+      댓글 : 1
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=731">
+  </a><div class="card"><a href="detail.html?id=731">
+    <div class="metadata">
+      <div id="731-name" class="name">
+        hanghae
+      </div>
+      <div class="date">
+        2022-05-27 09:33:17
+      </div>
+    </div>
+    <h2 class="title" id="731-title">"살려..ㅈㅛ......"</h2>
+    <div class="contents" id="731-contents">
+      매주매주 더 힘들죠???????????????
+    </div>
+    <div class="countReply">
+      댓글 : 2
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=728">
+  </a><div class="card"><a href="detail.html?id=728">
+    <div class="metadata">
+      <div id="728-name" class="name">
+        안재훈
+      </div>
+      <div class="date">
+        2022-05-27 09:31:14
+      </div>
+    </div>
+    <h2 class="title" id="728-title">"여기..사람있어요.."</h2>
+    <div class="contents" id="728-contents">
+      살려줘요..이상한거 시켜요..
+    </div>
+    <div class="countReply">
+      댓글 : 1
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=723">
+  </a><div class="card"><a href="detail.html?id=723">
+    <div class="metadata">
+      <div id="723-name" class="name">
+        dfsdfs12
+      </div>
+      <div class="date">
+        2022-05-27 09:25:21
+      </div>
+    </div>
+    <h2 class="title" id="723-title">"fsdf"</h2>
+    <div class="contents" id="723-contents">
+      fsdfsdffsfd
+    </div>
+    <div class="countReply">
+      댓글 : 2
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=716">
+  </a><div class="card"><a href="detail.html?id=716">
+    <div class="metadata">
+      <div id="716-name" class="name">
+        saveme
+      </div>
+      <div class="date">
+        2022-05-27 09:14:23
+      </div>
+    </div>
+    <h2 class="title" id="716-title">"살려주세요"</h2>
+    <div class="contents" id="716-contents">
+      살려주세요 제발
+    </div>
+    <div class="countReply">
+      댓글 : 0
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=713">
+  </a><div class="card"><a href="detail.html?id=713">
+    <div class="metadata">
+      <div id="713-name" class="name">
+        kimyj9501
+      </div>
+      <div class="date">
+        2022-05-27 08:38:49
+      </div>
+    </div>
+    <h2 class="title" id="713-title">"테슷트"</h2>
+    <div class="contents" id="713-contents">
+      잘돌아가나연?
+    </div>
+    <div class="countReply">
+      댓글 : 1
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=698">
+  </a><div class="card"><a href="detail.html?id=698">
+    <div class="metadata">
+      <div id="698-name" class="name">
+        승균
+      </div>
+      <div class="date">
+        2022-04-08 10:39:41
+      </div>
+    </div>
+    <h2 class="title" id="698-title">"dsafasdf"</h2>
+    <div class="contents" id="698-contents">
+      sadf
+      sdfasdf
+    </div>
+    <div class="countReply">
+      댓글 : 1
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=680">
+  </a><div class="card"><a href="detail.html?id=680">
+    <div class="metadata">
+      <div id="680-name" class="name">
+        ( ͡ಠ ʖ̯ ͡ಠ)
+      </div>
+      <div class="date">
+        2022-03-30 16:14:32
+      </div>
+    </div>
+    <h2 class="title" id="680-title">"글쓴 건 수정이 안되나..?"</h2>
+    <div class="contents" id="680-contents">
+      ㅁㄴㅇㄼㄴㄹㄴ
+    </div>
+    <div class="countReply">
+      댓글 : 3
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=667">
+  </a><div class="card"><a href="detail.html?id=667">
+    <div class="metadata">
+      <div id="667-name" class="name">
+        spring1
+      </div>
+      <div class="date">
+        2022-03-29 20:37:19
+      </div>
+    </div>
+    <h2 class="title" id="667-title">"asdf"</h2>
+    <div class="contents" id="667-contents">
+      zz
+    </div>
+    <div class="countReply">
+      댓글 : 5
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=664">
+  </a><div class="card"><a href="detail.html?id=664">
+    <div class="metadata">
+      <div id="664-name" class="name">
+        usernametest
+      </div>
+      <div class="date">
+        2022-03-29 18:07:15
+      </div>
+    </div>
+    <h2 class="title" id="664-title">"title"</h2>
+    <div class="contents" id="664-contents">
+      contents
+    </div>
+    <div class="countReply">
+      댓글 : 2
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=660">
+  </a><div class="card"><a href="detail.html?id=660">
+    <div class="metadata">
+      <div id="660-name" class="name">
+        zxcv1
+      </div>
+      <div class="date">
+        2022-03-29 17:07:42
+      </div>
+    </div>
+    <h2 class="title" id="660-title">"dafdfadsf"</h2>
+    <div class="contents" id="660-contents">
+      dfadf
+    </div>
+    <div class="countReply">
+      댓글 : 0
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=615">
+  </a><div class="card"><a href="detail.html?id=615">
+    <div class="metadata">
+      <div id="615-name" class="name">
+        응수'-'
+      </div>
+      <div class="date">
+        2022-03-29 03:28:55
+      </div>
+    </div>
+    <h2 class="title" id="615-title">"댓글 몇개인지 표시해주는 기능을,,"</h2>
+    <div class="contents" id="615-contents">
+      다 하시면 도전해보세요 댓글 개수 카운팅하는 기능을!
+    </div>
+    <div class="countReply">
+      댓글 : 10
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=574">
+  </a><div class="card"><a href="detail.html?id=574">
+    <div class="metadata">
+      <div id="574-name" class="name">
+        devlee
+      </div>
+      <div class="date">
+        2022-03-28 15:18:23
+      </div>
+    </div>
+    <h2 class="title" id="574-title">"나는 할수있따!!!"</h2>
+    <div class="contents" id="574-contents">
+      ㅜㅜ
+    </div>
+    <div class="countReply">
+      댓글 : 5
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=572">
+  </a><div class="card"><a href="detail.html?id=572">
+    <div class="metadata">
+      <div id="572-name" class="name">
+        asdqwe
+      </div>
+      <div class="date">
+        2022-03-28 15:07:45
+      </div>
+    </div>
+    <h2 class="title" id="572-title">"제목"</h2>
+    <div class="contents" id="572-contents">
+      내용
+    </div>
+    <div class="countReply">
+      댓글 : 1
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=571">
+  </a><div class="card"><a href="detail.html?id=571">
+    <div class="metadata">
+      <div id="571-name" class="name">
+        asdqwe
+      </div>
+      <div class="date">
+        2022-03-28 15:06:59
+      </div>
+    </div>
+    <h2 class="title" id="571-title">"asd"</h2>
+    <div class="contents" id="571-contents">
+      asdasd
+    </div>
+    <div class="countReply">
+      댓글 : 0
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=559">
+  </a><div class="card"><a href="detail.html?id=559">
+    <div class="metadata">
+      <div id="559-name" class="name">
+        qwert
+      </div>
+      <div class="date">
+        2022-03-27 20:42:27
+      </div>
+    </div>
+    <h2 class="title" id="559-title">"12312"</h2>
+    <div class="contents" id="559-contents">
+      qweqwrq
+    </div>
+    <div class="countReply">
+      댓글 : 2
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=552">
+  </a><div class="card"><a href="detail.html?id=552">
+    <div class="metadata">
+      <div id="552-name" class="name">
+        qwert
+      </div>
+      <div class="date">
+        2022-03-26 23:32:40
+      </div>
+    </div>
+    <h2 class="title" id="552-title">"1234"</h2>
+    <div class="contents" id="552-contents">
+      qwer
+    </div>
+    <div class="countReply">
+      댓글 : 0
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=547">
+  </a><div class="card"><a href="detail.html?id=547">
+    <div class="metadata">
+      <div id="547-name" class="name">
+        qwert
+      </div>
+      <div class="date">
+        2022-03-26 13:58:57
+      </div>
+    </div>
+    <h2 class="title" id="547-title">"1234"</h2>
+    <div class="contents" id="547-contents">
+      qwer
+    </div>
+    <div class="countReply">
+      댓글 : 3
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=542">
+  </a><div class="card"><a href="detail.html?id=542">
+    <div class="metadata">
+      <div id="542-name" class="name">
+        rlaougs5
+      </div>
+      <div class="date">
+        2022-03-26 00:13:37
+      </div>
+    </div>
+    <h2 class="title" id="542-title">"스프링"</h2>
+    <div class="contents" id="542-contents">
+      스프링 너무 재밌다 하하하하하하하
+    </div>
+    <div class="countReply">
+      댓글 : 3
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=533">
+  </a><div class="card"><a href="detail.html?id=533">
+    <div class="metadata">
+      <div id="533-name" class="name">
+        qer
+      </div>
+      <div class="date">
+        2022-03-25 18:28:23
+      </div>
+    </div>
+    <h2 class="title" id="533-title">"하"</h2>
+    <div class="contents" id="533-contents">
+      다들 화이팅
+    </div>
+    <div class="countReply">
+      댓글 : 1
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=515">
+  </a><div class="card"><a href="detail.html?id=515">
+    <div class="metadata">
+      <div id="515-name" class="name">
+        qqqqqqq
+      </div>
+      <div class="date">
+        2022-03-25 12:26:40
+      </div>
+    </div>
+    <h2 class="title" id="515-title">"무우야아호오오옹"</h2>
+    <div class="contents" id="515-contents">
+      깔깔
+    </div>
+    <div class="countReply">
+      댓글 : 3
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=511">
+  </a><div class="card"><a href="detail.html?id=511">
+    <div class="metadata">
+      <div id="511-name" class="name">
+        test123
+      </div>
+      <div class="date">
+        2022-03-25 11:58:51
+      </div>
+    </div>
+    <h2 class="title" id="511-title">"끝말잇기 시작"</h2>
+    <div class="contents" id="511-contents">
+      항해 쿵쿵따 !
+    </div>
+    <div class="countReply">
+      댓글 : 3
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=504">
+  </a><div class="card"><a href="detail.html?id=504">
+    <div class="metadata">
+      <div id="504-name" class="name">
+        gkgk
+      </div>
+      <div class="date">
+        2022-03-25 11:39:01
+      </div>
+    </div>
+    <h2 class="title" id="504-title">"다들 화이팅~!!⭐"</h2>
+    <div class="contents" id="504-contents">
+      무야호~~~
+    </div>
+    <div class="countReply">
+      댓글 : 1
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=499">
+  </a><div class="card"><a href="detail.html?id=499">
+    <div class="metadata">
+      <div id="499-name" class="name">
+        spring
+      </div>
+      <div class="date">
+        2022-03-25 11:29:51
+      </div>
+    </div>
+    <h2 class="title" id="499-title">"&lt;&gt;"</h2>
+    <div class="contents" id="499-contents">
+      xss 안돼요,,하지마세요ㅠㅠ
+    </div>
+    <div class="countReply">
+      댓글 : 0
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=489">
+  </a><div class="card"><a href="detail.html?id=489">
+    <div class="metadata">
+      <div id="489-name" class="name">
+        jin
+      </div>
+      <div class="date">
+        2022-03-25 11:20:11
+      </div>
+    </div>
+    <h2 class="title" id="489-title">"생각보다 할게 많다..."</h2>
+    <div class="contents" id="489-contents">
+      역시... 숙련 과정이라 그런지 생각보다 할게 많네요...ㅠㅠ
+
+      다들 화이팅입니다!!
+
+      Spring 배우다보면 봄이 오겠죠
+    </div>
+    <div class="countReply">
+      댓글 : 2
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=474">
+  </a><div class="card"><a href="detail.html?id=474">
+    <div class="metadata">
+      <div id="474-name" class="name">
+        kiri
+      </div>
+      <div class="date">
+        2022-03-25 10:15:48
+      </div>
+    </div>
+    <h2 class="title" id="474-title">"123"</h2>
+    <div class="contents" id="474-contents">
+      123
+    </div>
+    <div class="countReply">
+      댓글 : 1
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=472">
+  </a><div class="card"><a href="detail.html?id=472">
+    <div class="metadata">
+      <div id="472-name" class="name">
+        dss
+      </div>
+      <div class="date">
+        2022-03-25 09:58:11
+      </div>
+    </div>
+    <h2 class="title" id="472-title">"gdfs"</h2>
+    <div class="contents" id="472-contents">
+      gsdfgsdf
+    </div>
+    <div class="countReply">
+      댓글 : 0
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=452">
+  </a><div class="card"><a href="detail.html?id=452">
+    <div class="metadata">
+      <div id="452-name" class="name">
+        testtesttest
+      </div>
+      <div class="date">
+        2022-03-25 09:46:15
+      </div>
+    </div>
+    <h2 class="title" id="452-title">"멘붕~~ 응원이 필요해요.."</h2>
+    <div class="contents" id="452-contents">
+      개인과제 노션보고 일단 멘붕이 왔습니다...
+
+      가능하겠죠?? ㅠ_ㅠ 응원의 댓글이 필요합니다
+    </div>
+    <div class="countReply">
+      댓글 : 6
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=449">
+  </a><div class="card"><a href="detail.html?id=449">
+    <div class="metadata">
+      <div id="449-name" class="name">
+        dkssud
+      </div>
+      <div class="date">
+        2022-03-25 09:43:32
+      </div>
+    </div>
+    <h2 class="title" id="449-title">"무야호~"</h2>
+    <div class="contents" id="449-contents">
+      그만큼 신난다시는거지
+    </div>
+    <div class="countReply">
+      댓글 : 0
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=445">
+  </a><div class="card"><a href="detail.html?id=445">
+    <div class="metadata">
+      <div id="445-name" class="name">
+        goldkiwi1234
+      </div>
+      <div class="date">
+        2022-03-25 09:29:43
+      </div>
+    </div>
+    <h2 class="title" id="445-title">"무야호~"</h2>
+    <div class="contents" id="445-contents">
+      무야호~
+    </div>
+    <div class="countReply">
+      댓글 : 0
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=444">
+  </a><div class="card"><a href="detail.html?id=444">
+    <div class="metadata">
+      <div id="444-name" class="name">
+        kim1234
+      </div>
+      <div class="date">
+        2022-03-25 09:29:31
+      </div>
+    </div>
+    <h2 class="title" id="444-title">"샘플 프로젝트는"</h2>
+    <div class="contents" id="444-contents">
+      교육생이 만든건가요?
+      퀄리티가 좋네요
+    </div>
+    <div class="countReply">
+      댓글 : 1
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=442">
+  </a><div class="card"><a href="detail.html?id=442">
+    <div class="metadata">
+      <div id="442-name" class="name">
+        kim1234
+      </div>
+      <div class="date">
+        2022-03-25 09:28:11
+      </div>
+    </div>
+    <h2 class="title" id="442-title">"xss 정말 안되나요?"</h2>
+    <div class="contents" id="442-contents">
+      하지말라니까 해보고 싶네요..
+    </div>
+    <div class="countReply">
+      댓글 : 0
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=435">
+  </a><div class="card"><a href="detail.html?id=435">
+    <div class="metadata">
+      <div id="435-name" class="name">
+        wltnals00
+      </div>
+      <div class="date">
+        2022-03-25 09:25:29
+      </div>
+    </div>
+    <h2 class="title" id="435-title">" 제목"</h2>
+    <div class="contents" id="435-contents">
+      123
+    </div>
+    <div class="countReply">
+      댓글 : 0
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=433">
+  </a><div class="card"><a href="detail.html?id=433">
+    <div class="metadata">
+      <div id="433-name" class="name">
+        응수'-'
+      </div>
+      <div class="date">
+        2022-03-24 20:16:42
+      </div>
+    </div>
+    <h2 class="title" id="433-title">"항해5기"</h2>
+    <div class="contents" id="433-contents">
+      화이팅!
+    </div>
+    <div class="countReply">
+      댓글 : 0
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=431">
+  </a><div class="card"><a href="detail.html?id=431">
+    <div class="metadata">
+      <div id="431-name" class="name">
+        선원1
+      </div>
+      <div class="date">
+        2022-03-24 20:15:04
+      </div>
+    </div>
+    <h2 class="title" id="431-title">"항해99"</h2>
+    <div class="contents" id="431-contents">
+      어푸어푸
+    </div>
+    <div class="countReply">
+      댓글 : 0
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=423">
+  </a><div class="card"><a href="detail.html?id=423">
+    <div class="metadata">
+      <div id="423-name" class="name">
+        kim
+      </div>
+      <div class="date">
+        2022-02-11 11:50:46
+      </div>
+    </div>
+    <h2 class="title" id="423-title">"asdfasdf"</h2>
+    <div class="contents" id="423-contents">
+      asdf
+    </div>
+    <div class="countReply">
+      댓글 : 1
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=422">
+  </a><div class="card"><a href="detail.html?id=422">
+    <div class="metadata">
+      <div id="422-name" class="name">
+        qwe123
+      </div>
+      <div class="date">
+        2022-02-05 00:15:16
+      </div>
+    </div>
+    <h2 class="title" id="422-title">"123123"</h2>
+    <div class="contents" id="422-contents">
+      xss 안돼요,,하지마세요ㅠㅠ
+    </div>
+    <div class="countReply">
+      댓글 : 0
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=414">
+  </a><div class="card"><a href="detail.html?id=414">
+    <div class="metadata">
+      <div id="414-name" class="name">
+        dss1222
+      </div>
+      <div class="date">
+        2022-02-03 15:54:42
+      </div>
+    </div>
+    <h2 class="title" id="414-title">"asd"</h2>
+    <div class="contents" id="414-contents">
+      asd
+    </div>
+    <div class="countReply">
+      댓글 : 1
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=409">
+  </a><div class="card"><a href="detail.html?id=409">
+    <div class="metadata">
+      <div id="409-name" class="name">
+        반원재
+      </div>
+      <div class="date">
+        2022-02-03 11:15:45
+      </div>
+    </div>
+    <h2 class="title" id="409-title">"213"</h2>
+    <div class="contents" id="409-contents">
+      ll
+    </div>
+    <div class="countReply">
+      댓글 : 2
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=407">
+  </a><div class="card"><a href="detail.html?id=407">
+    <div class="metadata">
+      <div id="407-name" class="name">
+        01055438575
+      </div>
+      <div class="date">
+        2022-02-03 08:07:41
+      </div>
+    </div>
+    <h2 class="title" id="407-title">"1111111111111111111111111111111111111"</h2>
+    <div class="contents" id="407-contents">
+      2222222222222222222222222222222222222222222222222222222222222222222222222222
+    </div>
+    <div class="countReply">
+      댓글 : 2
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=406">
+  </a><div class="card"><a href="detail.html?id=406">
+    <div class="metadata">
+      <div id="406-name" class="name">
+        01055438575
+      </div>
+      <div class="date">
+        2022-02-03 08:06:54
+      </div>
+    </div>
+    <h2 class="title" id="406-title">"nj"</h2>
+    <div class="contents" id="406-contents">
+      j
+    </div>
+    <div class="countReply">
+      댓글 : 0
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=403">
+  </a><div class="card"><a href="detail.html?id=403">
+    <div class="metadata">
+      <div id="403-name" class="name">
+        testest
+      </div>
+      <div class="date">
+        2022-02-03 01:50:43
+      </div>
+    </div>
+    <h2 class="title" id="403-title">"Spring은..."</h2>
+    <div class="contents" id="403-contents">
+      카카오 로그인 기능 !!!!????!!!
+    </div>
+    <div class="countReply">
+      댓글 : 1
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=397">
+  </a><div class="card"><a href="detail.html?id=397">
+    <div class="metadata">
+      <div id="397-name" class="name">
+        springsummerfall
+      </div>
+      <div class="date">
+        2022-02-02 23:10:24
+      </div>
+    </div>
+    <h2 class="title" id="397-title">"테스트으"</h2>
+    <div class="contents" id="397-contents">
+      테스트테스트
+    </div>
+    <div class="countReply">
+      댓글 : 1
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=395">
+  </a><div class="card"><a href="detail.html?id=395">
+    <div class="metadata">
+      <div id="395-name" class="name">
+        kim
+      </div>
+      <div class="date">
+        2022-02-02 21:58:52
+      </div>
+    </div>
+    <h2 class="title" id="395-title">"111"</h2>
+    <div class="contents" id="395-contents">
+      2222
+    </div>
+    <div class="countReply">
+      댓글 : 1
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=393">
+  </a><div class="card"><a href="detail.html?id=393">
+    <div class="metadata">
+      <div id="393-name" class="name">
+        최원준
+      </div>
+      <div class="date">
+        2022-02-02 21:33:02
+      </div>
+    </div>
+    <h2 class="title" id="393-title">"asddas"</h2>
+    <div class="contents" id="393-contents">
+      asdasdd
+    </div>
+    <div class="countReply">
+      댓글 : 1
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=391">
+  </a><div class="card"><a href="detail.html?id=391">
+    <div class="metadata">
+      <div id="391-name" class="name">
+        a12345
+      </div>
+      <div class="date">
+        2022-02-02 20:48:48
+      </div>
+    </div>
+    <h2 class="title" id="391-title">"fawd"</h2>
+    <div class="contents" id="391-contents">
+      dasdsa
+    </div>
+    <div class="countReply">
+      댓글 : 1
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=381">
+  </a><div class="card"><a href="detail.html?id=381">
+    <div class="metadata">
+      <div id="381-name" class="name">
+        최원준
+      </div>
+      <div class="date">
+        2022-02-02 17:06:02
+      </div>
+    </div>
+    <h2 class="title" id="381-title">"asddasads"</h2>
+    <div class="contents" id="381-contents">
+      dasdasdasddas
+    </div>
+    <div class="countReply">
+      댓글 : 1
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=369">
+  </a><div class="card"><a href="detail.html?id=369">
+    <div class="metadata">
+      <div id="369-name" class="name">
+        testtest
+      </div>
+      <div class="date">
+        2022-02-02 03:35:09
+      </div>
+    </div>
+    <h2 class="title" id="369-title">"test"</h2>
+    <div class="contents" id="369-contents">
+      test
+    </div>
+    <div class="countReply">
+      댓글 : 0
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=367">
+  </a><div class="card"><a href="detail.html?id=367">
+    <div class="metadata">
+      <div id="367-name" class="name">
+        test333
+      </div>
+      <div class="date">
+        2022-02-02 02:24:15
+      </div>
+    </div>
+    <h2 class="title" id="367-title">"cxzczx"</h2>
+    <div class="contents" id="367-contents">
+      cxxxx
+    </div>
+    <div class="countReply">
+      댓글 : 1
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=362">
+  </a><div class="card"><a href="detail.html?id=362">
+    <div class="metadata">
+      <div id="362-name" class="name">
+        abc123123
+      </div>
+      <div class="date">
+        2022-02-01 21:19:05
+      </div>
+    </div>
+    <h2 class="title" id="362-title">"제목테스트"</h2>
+    <div class="contents" id="362-contents">
+      내용테스트
+    </div>
+    <div class="countReply">
+      댓글 : 3
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=361">
+  </a><div class="card"><a href="detail.html?id=361">
+    <div class="metadata">
+      <div id="361-name" class="name">
+        abc123123
+      </div>
+      <div class="date">
+        2022-02-01 21:18:36
+      </div>
+    </div>
+    <h2 class="title" id="361-title">"123123"</h2>
+    <div class="contents" id="361-contents">
+      123123
+    </div>
+    <div class="countReply">
+      댓글 : 1
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=359">
+  </a><div class="card"><a href="detail.html?id=359">
+    <div class="metadata">
+      <div id="359-name" class="name">
+        a12345
+      </div>
+      <div class="date">
+        2022-02-01 20:16:32
+      </div>
+    </div>
+    <h2 class="title" id="359-title">"새해 복 많이 받으세용"</h2>
+    <div class="contents" id="359-contents">
+      이번 년도는 새해 선물을 코딩?
+      ㅎㅎ행복하네?:D
+      오늘도 핫식스
+    </div>
+    <div class="countReply">
+      댓글 : 0
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=352">
+  </a><div class="card"><a href="detail.html?id=352">
+    <div class="metadata">
+      <div id="352-name" class="name">
+        4421
+      </div>
+      <div class="date">
+        2022-02-01 18:11:14
+      </div>
+    </div>
+    <h2 class="title" id="352-title">"123"</h2>
+    <div class="contents" id="352-contents">
+      1234
+
+    </div>
+    <div class="countReply">
+      댓글 : 1
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=350">
+  </a><div class="card"><a href="detail.html?id=350">
+    <div class="metadata">
+      <div id="350-name" class="name">
+        qwertyui
+      </div>
+      <div class="date">
+        2022-02-01 18:09:21
+      </div>
+    </div>
+    <h2 class="title" id="350-title">"asdfsadfasdf"</h2>
+    <div class="contents" id="350-contents">
+      asdfasdfasdfasdf
+    </div>
+    <div class="countReply">
+      댓글 : 1
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=346">
+  </a><div class="card"><a href="detail.html?id=346">
+    <div class="metadata">
+      <div id="346-name" class="name">
+        123456
+      </div>
+      <div class="date">
+        2022-02-01 18:07:12
+      </div>
+    </div>
+    <h2 class="title" id="346-title">"asdasd"</h2>
+    <div class="contents" id="346-contents">
+      asdasdasd
+    </div>
+    <div class="countReply">
+      댓글 : 1
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=344">
+  </a><div class="card"><a href="detail.html?id=344">
+    <div class="metadata">
+      <div id="344-name" class="name">
+        문병민
+      </div>
+      <div class="date">
+        2022-02-01 17:01:24
+      </div>
+    </div>
+    <h2 class="title" id="344-title">"테스트"</h2>
+    <div class="contents" id="344-contents">
+      ㅋㅋ
+    </div>
+    <div class="countReply">
+      댓글 : 2
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=336">
+  </a><div class="card"><a href="detail.html?id=336">
+    <div class="metadata">
+      <div id="336-name" class="name">
+        springsummerfall
+      </div>
+      <div class="date">
+        2022-02-01 12:08:27
+      </div>
+    </div>
+    <h2 class="title" id="336-title">"안녕"</h2>
+    <div class="contents" id="336-contents">
+      안녕하세요
+    </div>
+    <div class="countReply">
+      댓글 : 0
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=331">
+  </a><div class="card"><a href="detail.html?id=331">
+    <div class="metadata">
+      <div id="331-name" class="name">
+        kim
+      </div>
+      <div class="date">
+        2022-02-01 11:44:59
+      </div>
+    </div>
+    <h2 class="title" id="331-title">"으어어어"</h2>
+    <div class="contents" id="331-contents">
+      빙글빙글
+    </div>
+    <div class="countReply">
+      댓글 : 2
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=328">
+  </a><div class="card"><a href="detail.html?id=328">
+    <div class="metadata">
+      <div id="328-name" class="name">
+        qwer
+      </div>
+      <div class="date">
+        2022-02-01 03:58:55
+      </div>
+    </div>
+    <h2 class="title" id="328-title">"12"</h2>
+    <div class="contents" id="328-contents">
+      1212
+    </div>
+    <div class="countReply">
+      댓글 : 0
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=319">
+  </a><div class="card"><a href="detail.html?id=319">
+    <div class="metadata">
+      <div id="319-name" class="name">
+        wow
+      </div>
+      <div class="date">
+        2022-01-31 20:50:51
+      </div>
+    </div>
+    <h2 class="title" id="319-title">"코카콜라 미만 잡,,"</h2>
+    <div class="contents" id="319-contents">
+      펩시? 그게 뭐에요
+    </div>
+    <div class="countReply">
+      댓글 : 4
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=315">
+  </a><div class="card"><a href="detail.html?id=315">
+    <div class="metadata">
+      <div id="315-name" class="name">
+        pepsiking
+      </div>
+      <div class="date">
+        2022-01-31 13:54:06
+      </div>
+    </div>
+    <h2 class="title" id="315-title">"펩시제로짱2"</h2>
+    <div class="contents" id="315-contents">
+      테스트
+    </div>
+    <div class="countReply">
+      댓글 : 1
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=312">
+  </a><div class="card"><a href="detail.html?id=312">
+    <div class="metadata">
+      <div id="312-name" class="name">
+        pepsiking
+      </div>
+      <div class="date">
+        2022-01-31 13:42:52
+      </div>
+    </div>
+    <h2 class="title" id="312-title">"펩시제로"</h2>
+    <div class="contents" id="312-contents">
+      짱
+    </div>
+    <div class="countReply">
+      댓글 : 2
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=307">
+  </a><div class="card"><a href="detail.html?id=307">
+    <div class="metadata">
+      <div id="307-name" class="name">
+        a1234
+      </div>
+      <div class="date">
+        2022-01-31 12:04:32
+      </div>
+    </div>
+    <h2 class="title" id="307-title">"tv"</h2>
+    <div class="contents" id="307-contents">
+      tv
+    </div>
+    <div class="countReply">
+      댓글 : 1
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=302">
+  </a><div class="card"><a href="detail.html?id=302">
+    <div class="metadata">
+      <div id="302-name" class="name">
+        123456
+      </div>
+      <div class="date">
+        2022-01-31 11:45:52
+      </div>
+    </div>
+    <h2 class="title" id="302-title">"ttt"</h2>
+    <div class="contents" id="302-contents">
+      ttt
+    </div>
+    <div class="countReply">
+      댓글 : 1
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=300">
+  </a><div class="card"><a href="detail.html?id=300">
+    <div class="metadata">
+      <div id="300-name" class="name">
+        sparta
+      </div>
+      <div class="date">
+        2022-01-31 11:41:29
+      </div>
+    </div>
+    <h2 class="title" id="300-title">"1234"</h2>
+    <div class="contents" id="300-contents">
+      1234
+    </div>
+    <div class="countReply">
+      댓글 : 1
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=286">
+  </a><div class="card"><a href="detail.html?id=286">
+    <div class="metadata">
+      <div id="286-name" class="name">
+        testing
+      </div>
+      <div class="date">
+        2022-01-30 22:41:09
+      </div>
+    </div>
+    <h2 class="title" id="286-title">"수정삭제"</h2>
+    <div class="contents" id="286-contents">
+      수정삭제 가능한가?
+    </div>
+    <div class="countReply">
+      댓글 : 4
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=274">
+  </a><div class="card"><a href="detail.html?id=274">
+    <div class="metadata">
+      <div id="274-name" class="name">
+        rrrrr
+      </div>
+      <div class="date">
+        2022-01-29 13:42:06
+      </div>
+    </div>
+    <h2 class="title" id="274-title">"하하하"</h2>
+    <div class="contents" id="274-contents">
+      하하하하하하하하하
+    </div>
+    <div class="countReply">
+      댓글 : 1
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=267">
+  </a><div class="card"><a href="detail.html?id=267">
+    <div class="metadata">
+      <div id="267-name" class="name">
+        test1
+      </div>
+      <div class="date">
+        2022-01-28 17:45:54
+      </div>
+    </div>
+    <h2 class="title" id="267-title">"안녕하세요"</h2>
+    <div class="contents" id="267-contents">
+      화이팅!!!
+    </div>
+    <div class="countReply">
+      댓글 : 1
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=264">
+  </a><div class="card"><a href="detail.html?id=264">
+    <div class="metadata">
+      <div id="264-name" class="name">
+        123456
+      </div>
+      <div class="date">
+        2022-01-28 15:35:56
+      </div>
+    </div>
+    <h2 class="title" id="264-title">"aa"</h2>
+    <div class="contents" id="264-contents">
+      aaa
+    </div>
+    <div class="countReply">
+      댓글 : 1
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=263">
+  </a><div class="card"><a href="detail.html?id=263">
+    <div class="metadata">
+      <div id="263-name" class="name">
+        123456
+      </div>
+      <div class="date">
+        2022-01-28 15:33:53
+      </div>
+    </div>
+    <h2 class="title" id="263-title">"aaa"</h2>
+    <div class="contents" id="263-contents">
+      aaaa
+    </div>
+    <div class="countReply">
+      댓글 : 0
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=259">
+  </a><div class="card"><a href="detail.html?id=259">
+    <div class="metadata">
+      <div id="259-name" class="name">
+        springspring
+      </div>
+      <div class="date">
+        2022-01-28 12:06:03
+      </div>
+    </div>
+    <h2 class="title" id="259-title">"살려줘"</h2>
+    <div class="contents" id="259-contents">
+      살려줘...
+    </div>
+    <div class="countReply">
+      댓글 : 2
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=257">
+  </a><div class="card"><a href="detail.html?id=257">
+    <div class="metadata">
+      <div id="257-name" class="name">
+        1234
+      </div>
+      <div class="date">
+        2022-01-28 10:55:13
+      </div>
+    </div>
+    <h2 class="title" id="257-title">"adg"</h2>
+    <div class="contents" id="257-contents">
+      adg
+    </div>
+    <div class="countReply">
+      댓글 : 0
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=251">
+  </a><div class="card"><a href="detail.html?id=251">
+    <div class="metadata">
+      <div id="251-name" class="name">
+        zxcvbnm
+      </div>
+      <div class="date">
+        2022-01-28 10:18:23
+      </div>
+    </div>
+    <h2 class="title" id="251-title">"qwerqwer"</h2>
+    <div class="contents" id="251-contents">
+      asdfasdfasdfasdf
+    </div>
+    <div class="countReply">
+      댓글 : 1
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=249">
+  </a><div class="card"><a href="detail.html?id=249">
+    <div class="metadata">
+      <div id="249-name" class="name">
+        dddd
+      </div>
+      <div class="date">
+        2022-01-28 09:41:41
+      </div>
+    </div>
+    <h2 class="title" id="249-title">"핫식스"</h2>
+    <div class="contents" id="249-contents">
+      핫식스
+    </div>
+    <div class="countReply">
+      댓글 : 1
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=243">
+  </a><div class="card"><a href="detail.html?id=243">
+    <div class="metadata">
+      <div id="243-name" class="name">
+        wow
+      </div>
+      <div class="date">
+        2022-01-27 14:39:54
+      </div>
+    </div>
+    <h2 class="title" id="243-title">"자신이 쓴 글만 삭제 버튼이 나옴"</h2>
+    <div class="contents" id="243-contents">
+      자신이 쓴 댓글만 삭제 수정 버튼이 나옴
+    </div>
+    <div class="countReply">
+      댓글 : 0
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=241">
+  </a><div class="card"><a href="detail.html?id=241">
+    <div class="metadata">
+      <div id="241-name" class="name">
+        wow
+      </div>
+      <div class="date">
+        2022-01-27 14:38:54
+      </div>
+    </div>
+    <h2 class="title" id="241-title">"어쩔티비"</h2>
+    <div class="contents" id="241-contents">
+      저쩔냉장고
+    </div>
+    <div class="countReply">
+      댓글 : 0
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=219">
+  </a><div class="card"><a href="detail.html?id=219">
+    <div class="metadata">
+      <div id="219-name" class="name">
+        woojin126
+      </div>
+      <div class="date">
+        2021-11-27 11:37:25
+      </div>
+    </div>
+    <h2 class="title" id="219-title">"wefw"</h2>
+    <div class="contents" id="219-contents">
+      sefsefsef
+    </div>
+    <div class="countReply">
+      댓글 : 2
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=218">
+  </a><div class="card"><a href="detail.html?id=218">
+    <div class="metadata">
+      <div id="218-name" class="name">
+        zxc
+      </div>
+      <div class="date">
+        2021-11-27 05:24:27
+      </div>
+    </div>
+    <h2 class="title" id="218-title">"d"</h2>
+    <div class="contents" id="218-contents">
+      d
+    </div>
+    <div class="countReply">
+      댓글 : 1
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=210">
+  </a><div class="card"><a href="detail.html?id=210">
+    <div class="metadata">
+      <div id="210-name" class="name">
+        As123
+      </div>
+      <div class="date">
+        2021-11-26 12:13:50
+      </div>
+    </div>
+    <h2 class="title" id="210-title">"테스트"</h2>
+    <div class="contents" id="210-contents">
+      테스트
+    </div>
+    <div class="countReply">
+      댓글 : 3
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=202">
+  </a><div class="card"><a href="detail.html?id=202">
+    <div class="metadata">
+      <div id="202-name" class="name">
+        kitcat
+      </div>
+      <div class="date">
+        2021-11-25 01:35:58
+      </div>
+    </div>
+    <h2 class="title" id="202-title">"제목"</h2>
+    <div class="contents" id="202-contents">
+      내용
+    </div>
+    <div class="countReply">
+      댓글 : 2
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=188">
+  </a><div class="card"><a href="detail.html?id=188">
+    <div class="metadata">
+      <div id="188-name" class="name">
+        goodn911
+      </div>
+      <div class="date">
+        2021-11-24 03:14:15
+      </div>
+    </div>
+    <h2 class="title" id="188-title">"제목"</h2>
+    <div class="contents" id="188-contents">
+      11
+    </div>
+    <div class="countReply">
+      댓글 : 2
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=185">
+  </a><div class="card"><a href="detail.html?id=185">
+    <div class="metadata">
+      <div id="185-name" class="name">
+        diddl61
+      </div>
+      <div class="date">
+        2021-11-24 00:56:52
+      </div>
+    </div>
+    <h2 class="title" id="185-title">"111"</h2>
+    <div class="contents" id="185-contents">
+      1111
+    </div>
+    <div class="countReply">
+      댓글 : 1
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=178">
+  </a><div class="card"><a href="detail.html?id=178">
+    <div class="metadata">
+      <div id="178-name" class="name">
+        asdf
+      </div>
+      <div class="date">
+        2021-11-23 23:28:21
+      </div>
+    </div>
+    <h2 class="title" id="178-title">"asdf"</h2>
+    <div class="contents" id="178-contents">
+      asdf
+    </div>
+    <div class="countReply">
+      댓글 : 2
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=177">
+  </a><div class="card"><a href="detail.html?id=177">
+    <div class="metadata">
+      <div id="177-name" class="name">
+        ssss
+      </div>
+      <div class="date">
+        2021-11-23 23:16:09
+      </div>
+    </div>
+    <h2 class="title" id="177-title">"s"</h2>
+    <div class="contents" id="177-contents">
+      s
+    </div>
+    <div class="countReply">
+      댓글 : 0
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=169">
+  </a><div class="card"><a href="detail.html?id=169">
+    <div class="metadata">
+      <div id="169-name" class="name">
+        goodn911
+      </div>
+      <div class="date">
+        2021-11-23 22:22:49
+      </div>
+    </div>
+    <h2 class="title" id="169-title">"이해를 못하는"</h2>
+    <div class="contents" id="169-contents">
+      나는 바보
+    </div>
+    <div class="countReply">
+      댓글 : 2
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=168">
+  </a><div class="card"><a href="detail.html?id=168">
+    <div class="metadata">
+      <div id="168-name" class="name">
+        goodn911
+      </div>
+      <div class="date">
+        2021-11-23 22:22:27
+      </div>
+    </div>
+    <h2 class="title" id="168-title">"sdf"</h2>
+    <div class="contents" id="168-contents">
+      sdf
+    </div>
+    <div class="countReply">
+      댓글 : 1
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=164">
+  </a><div class="card"><a href="detail.html?id=164">
+    <div class="metadata">
+      <div id="164-name" class="name">
+        dbgmlwns
+      </div>
+      <div class="date">
+        2021-11-23 19:06:02
+      </div>
+    </div>
+    <h2 class="title" id="164-title">"집이지만 집가고 싶다"</h2>
+    <div class="contents" id="164-contents">
+      집에 보내주세요
+    </div>
+    <div class="countReply">
+      댓글 : 0
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=161">
+  </a><div class="card"><a href="detail.html?id=161">
+    <div class="metadata">
+      <div id="161-name" class="name">
+        goodn911
+      </div>
+      <div class="date">
+        2021-11-23 18:59:56
+      </div>
+    </div>
+    <h2 class="title" id="161-title">"화이또"</h2>
+    <div class="contents" id="161-contents">
+      화이
+    </div>
+    <div class="countReply">
+      댓글 : 0
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=151">
+  </a><div class="card"><a href="detail.html?id=151">
+    <div class="metadata">
+      <div id="151-name" class="name">
+        toast
+      </div>
+      <div class="date">
+        2021-11-23 17:08:00
+      </div>
+    </div>
+    <h2 class="title" id="151-title">"이얏호"</h2>
+    <div class="contents" id="151-contents">
+      4기화이팅
+    </div>
+    <div class="countReply">
+      댓글 : 2
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=146">
+  </a><div class="card"><a href="detail.html?id=146">
+    <div class="metadata">
+      <div id="146-name" class="name">
+        선원1
+      </div>
+      <div class="date">
+        2021-11-23 15:09:55
+      </div>
+    </div>
+    <h2 class="title" id="146-title">"항해99"</h2>
+    <div class="contents" id="146-contents">
+      어푸어푸
+    </div>
+    <div class="countReply">
+      댓글 : 1
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=144">
+  </a><div class="card"><a href="detail.html?id=144">
+    <div class="metadata">
+      <div id="144-name" class="name">
+        선원1
+      </div>
+      <div class="date">
+        2021-11-23 14:46:02
+      </div>
+    </div>
+    <h2 class="title" id="144-title">"항해99"</h2>
+    <div class="contents" id="144-contents">
+      어푸어푸
+    </div>
+    <div class="countReply">
+      댓글 : 0
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=142">
+  </a><div class="card"><a href="detail.html?id=142">
+    <div class="metadata">
+      <div id="142-name" class="name">
+        선원1
+      </div>
+      <div class="date">
+        2021-11-23 14:09:05
+      </div>
+    </div>
+    <h2 class="title" id="142-title">"항해99"</h2>
+    <div class="contents" id="142-contents">
+      어푸어푸
+    </div>
+    <div class="countReply">
+      댓글 : 0
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=149">
+  </a><div class="card"><a href="detail.html?id=149">
+    <div class="metadata">
+      <div id="149-name" class="name">
+        선원1
+      </div>
+      <div class="date">
+        2021-11-23 07:34:11
+      </div>
+    </div>
+    <h2 class="title" id="149-title">"항해99"</h2>
+    <div class="contents" id="149-contents">
+      어푸어푸
+    </div>
+    <div class="countReply">
+      댓글 : 0
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=148">
+  </a><div class="card"><a href="detail.html?id=148">
+    <div class="metadata">
+      <div id="148-name" class="name">
+        선원1
+      </div>
+      <div class="date">
+        2021-11-23 07:27:17
+      </div>
+    </div>
+    <h2 class="title" id="148-title">"항해99"</h2>
+    <div class="contents" id="148-contents">
+      어푸어푸
+    </div>
+    <div class="countReply">
+      댓글 : 0
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=147">
+  </a><div class="card"><a href="detail.html?id=147">
+    <div class="metadata">
+      <div id="147-name" class="name">
+        선원1
+      </div>
+      <div class="date">
+        2021-11-23 06:38:25
+      </div>
+    </div>
+    <h2 class="title" id="147-title">"항해99"</h2>
+    <div class="contents" id="147-contents">
+      어푸어푸
+    </div>
+    <div class="countReply">
+      댓글 : 0
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=145">
+  </a><div class="card"><a href="detail.html?id=145">
+    <div class="metadata">
+      <div id="145-name" class="name">
+        선원1
+      </div>
+      <div class="date">
+        2021-11-23 06:07:42
+      </div>
+    </div>
+    <h2 class="title" id="145-title">"항해99"</h2>
+    <div class="contents" id="145-contents">
+      어푸어푸
+    </div>
+    <div class="countReply">
+      댓글 : 0
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=143">
+  </a><div class="card"><a href="detail.html?id=143">
+    <div class="metadata">
+      <div id="143-name" class="name">
+        선원1
+      </div>
+      <div class="date">
+        2021-11-23 05:15:50
+      </div>
+    </div>
+    <h2 class="title" id="143-title">"항해99"</h2>
+    <div class="contents" id="143-contents">
+      어푸어푸
+    </div>
+    <div class="countReply">
+      댓글 : 0
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=141">
+  </a><div class="card"><a href="detail.html?id=141">
+    <div class="metadata">
+      <div id="141-name" class="name">
+        선원1
+      </div>
+      <div class="date">
+        2021-11-23 05:07:09
+      </div>
+    </div>
+    <h2 class="title" id="141-title">"항해99"</h2>
+    <div class="contents" id="141-contents">
+      어푸어푸
+    </div>
+    <div class="countReply">
+      댓글 : 0
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=125">
+  </a><div class="card"><a href="detail.html?id=125">
+    <div class="metadata">
+      <div id="125-name" class="name">
+        wldms4294
+      </div>
+      <div class="date">
+        2021-10-08 11:08:10
+      </div>
+    </div>
+    <h2 class="title" id="125-title">"h2h2h2"</h2>
+    <div class="contents" id="125-contents">
+      와
+    </div>
+    <div class="countReply">
+      댓글 : 4
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=120">
+  </a><div class="card"><a href="detail.html?id=120">
+    <div class="metadata">
+      <div id="120-name" class="name">
+        rkqhwk2
+      </div>
+      <div class="date">
+        2021-10-08 08:03:37
+      </div>
+    </div>
+    <h2 class="title" id="120-title">"z"</h2>
+    <div class="contents" id="120-contents">
+      z
+    </div>
+    <div class="countReply">
+      댓글 : 1
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=116">
+  </a><div class="card"><a href="detail.html?id=116">
+    <div class="metadata">
+      <div id="116-name" class="name">
+        asdasd
+      </div>
+      <div class="date">
+        2021-10-07 22:11:38
+      </div>
+    </div>
+    <h2 class="title" id="116-title">"멋있습니다"</h2>
+    <div class="contents" id="116-contents">
+      멋져요..!!
+    </div>
+    <div class="countReply">
+      댓글 : 0
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=98">
+  </a><div class="card"><a href="detail.html?id=98">
+    <div class="metadata">
+      <div id="98-name" class="name">
+        user1
+      </div>
+      <div class="date">
+        2021-10-07 10:44:08
+      </div>
+    </div>
+    <h2 class="title" id="98-title">"무야호"</h2>
+    <div class="contents" id="98-contents">
+      무야호
+    </div>
+    <div class="countReply">
+      댓글 : 3
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=95">
+  </a><div class="card"><a href="detail.html?id=95">
+    <div class="metadata">
+      <div id="95-name" class="name">
+        user
+      </div>
+      <div class="date">
+        2021-10-07 10:42:55
+      </div>
+    </div>
+    <h2 class="title" id="95-title">"멋져요"</h2>
+    <div class="contents" id="95-contents">
+      좋아요
+    </div>
+    <div class="countReply">
+      댓글 : 1
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=90">
+  </a><div class="card"><a href="detail.html?id=90">
+    <div class="metadata">
+      <div id="90-name" class="name">
+        rkqhwk1
+      </div>
+      <div class="date">
+        2021-10-07 10:39:08
+      </div>
+    </div>
+    <h2 class="title" id="90-title">"ㅁㄴㅇㄹ"</h2>
+    <div class="contents" id="90-contents">
+      ㅁㄴㅇㄹ
+    </div>
+    <div class="countReply">
+      댓글 : 0
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=86">
+  </a><div class="card"><a href="detail.html?id=86">
+    <div class="metadata">
+      <div id="86-name" class="name">
+        wow
+      </div>
+      <div class="date">
+        2021-10-05 22:51:54
+      </div>
+    </div>
+    <h2 class="title" id="86-title">"3기 여러분"</h2>
+    <div class="contents" id="86-contents">
+      화이팅입니다!! 초조해 하지 않으셔도 돼요, 여러분은 충분히 잘 하고 계십니다!!
+    </div>
+    <div class="countReply">
+      댓글 : 4
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=84">
+  </a><div class="card"><a href="detail.html?id=84">
+    <div class="metadata">
+      <div id="84-name" class="name">
+        선원1
+      </div>
+      <div class="date">
+        2021-10-05 17:55:49
+      </div>
+    </div>
+    <h2 class="title" id="84-title">"항해99"</h2>
+    <div class="contents" id="84-contents">
+      어푸어푸
+    </div>
+    <div class="countReply">
+      댓글 : 1
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=9">
+  </a><div class="card"><a href="detail.html?id=9">
+    <div class="metadata">
+      <div id="9-name" class="name">
+        King
+      </div>
+      <div class="date">
+        2021-07-15 18:20:41
+      </div>
+    </div>
+    <h2 class="title" id="9-title">"내가 바로"</h2>
+    <div class="contents" id="9-contents">
+      왕이다!!
+    </div>
+    <div class="countReply">
+      댓글 : 0
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=5">
+  </a><div class="card"><a href="detail.html?id=5">
+    <div class="metadata">
+      <div id="5-name" class="name">
+        Jack
+      </div>
+      <div class="date">
+        2021-07-15 18:19:18
+      </div>
+    </div>
+    <h2 class="title" id="5-title">"우린"</h2>
+    <div class="contents" id="5-contents">
+      할 수 있어요!!
+    </div>
+    <div class="countReply">
+      댓글 : 1
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=3">
+  </a><div class="card"><a href="detail.html?id=3">
+    <div class="metadata">
+      <div id="3-name" class="name">
+        park
+      </div>
+      <div class="date">
+        2021-07-15 18:17:48
+      </div>
+    </div>
+    <h2 class="title" id="3-title">"너무 재밋어요"</h2>
+    <div class="contents" id="3-contents">
+      헤엄을 쳐서라도 육지에 도달하고 싶을 만큼!
+    </div>
+    <div class="countReply">
+      댓글 : 1
+    </div>
+  </a>
+
+  </div><a href="detail.html?id=1">
+  </a><div class="card"><a href="detail.html?id=1">
+    <div class="metadata">
+      <div id="1-name" class="name">
+        선원1
+      </div>
+      <div class="date">
+        2021-07-15 18:17:02
+      </div>
+    </div>
+    <h2 class="title" id="1-title">"항해99"</h2>
+    <div class="contents" id="1-contents">
+      어푸어푸
+    </div>
+    <div class="countReply">
+      댓글 : 0
+    </div>
+  </a>
+
+  </div></div>
+</div>
+
+</body></html>
